@@ -14,10 +14,10 @@ We report the first epigenome-wide association study (EWAS) of left-handedness, 
         <br>`code`: [alspac/run-ewas.r](alspac/run-ewas.r)
 * Summary statistics were combined in a meta-analysis (N=3,914) testing associations at 409,563 CpGs using METAL
     <br>`code`: [combined/metal.txt](combined/metal.txt) 
-* We tested whether EWAS signal was enriched near loci detected in the previous GWAS on handedness [(Cuellar-Partida et al, 2021)](https://www.nature.com/articles/s41562-020-00956-y).  
+* We tested whether EWAS signal was enriched near loci detected in the previous GWAS on handedness [(Cuellar-Partida et al, 2021)](https://www.nature.com/articles/s41562-020-00956-y)
     <br>`code`: [combined/gwas_followup.r](combined/gwas_followup.r)
 * We carried out within-pair twin analysis in MZ twins discordant for handedness (Nadults= 133 twin pairs, Nchildren= 86 twin pairs).
-* Secondary analyses were performed in different tissues
+* Secondary EWAS were performed in different tissues collected from children:
     1. In cord blood and peripheral blood in [ALSPAC](http://www.bristol.ac.uk/alspac/) children (N=1,021 with DNA methylation data at birth, at 7, 17 years old, Illumina 450k chip, and/or at 24 years old, Illumina EPIC array)
         <br>`code`: [alspac/run-ewas.r](alspac/run-ewas.r) 
     2. In buccal cells in [NTR](https://tweelingenregister.vu.nl/research) children (N=946 twins, mean age 9.5, SD 1.85, Illumina EPIC array)
