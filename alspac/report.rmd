@@ -1,0 +1,147 @@
+## Handedness in ARIES 
+
+### Sample populations
+
+ARIES time points/groups:
+```{r}
+aries.times <- c(cord="cord",
+                 F7="age 7",
+                 "15up"="age 15-17",
+                 F24="age 24",
+                 antenatal="age 29 (mothers during pregnancy)",
+                 FOM="age 47 (mothers)",
+                 FOF="age 54 (fathers)",
+                 parents="mothers (age 47) and fathers (age 54)")
+aries.times <- data.frame(aries.times=names(aries.times), description=aries.times)
+kable(aries.times, row.names=F)
+```
+
+```{r,results="asis"}
+library(tableone)
+for (time in names(ewas.ret)) {
+    for (model in names(ewas.ret[[time]])) {
+        ewas <- ewas.ret[[time]][[model]]
+        catvars <- names(which(apply(ewas$design, 2, function(var) length(unique(var)) < 10)))
+        strata <- colnames(ewas$design)[grep("handedright", colnames(ewas$design))]
+        surrogates <- colnames(ewas$design)[grep("^sv[0-9]+$", colnames(ewas$design))]
+        covars <- setdiff(colnames(ewas$design), c("(Intercept)", surrogates, strata)) 
+        ret <- CreateTableOne(vars=covars, 
+                              strata=strata,
+                              data=as.data.frame(ewas$design),
+                              factorVars=catvars)
+        cat(paste0("\n**", time, " ", model, " model:\nmethylation ~ ", paste(c("handedness", covars), collapse=" + "), "**\n"))
+        print(kableone(ret))
+    }
+}
+```
+
+### EWAS results
+
+
+```{r}
+kable(do.call(rbind, lapply(names(ewas.ret), function(time) {
+    do.call(rbind, lapply(names(ewas.ret[[time]]), function(model) {
+        ewas <- ewas.ret[[time]][[model]]$table
+        idx <- which(ewas$p.adjust < 0.05)
+        if (length(idx) == 0) return(NULL)
+        data.frame(time=time, model=model, ewas[idx,])
+    }))
+})))
+```
+
+
+Shown below are the single CpG sites with the lowest p-value in each EWAS.
+```{r}
+ret <- do.call(rbind, lapply(names(ewas.ret), function(time) {
+    do.call(rbind, lapply(names(ewas.ret[[time]]), function(model) {
+        ewas <- ewas.ret[[time]][[model]]
+        idx <- which.min(ewas$table$p.value)
+        data.frame(time=time, model=model, site=rownames(ewas$table)[idx], ewas$table[idx,])
+    }))
+}))
+ret$p.value <- format(ret$p.value, scientific=T)
+kable(ret,digits=4)
+```
+
+Agreement is *not* high between the time points.
+
+P-values for these sites in all time points (basic model):
+```{r}
+top.sites <- unique(as.character(ret$site))
+ret.p <- sapply(top.sites, function(site) {
+    sapply(ewas.ret, function(ewas.by.time) ewas.by.time$basic$table[site,"p.value"])
+})
+ret.p <- format(ret.p,scientific=T,digits=3)
+kable(ret.p)
+```
+
+... and full model:
+```{r}
+ret.p <- sapply(top.sites, function(site) {
+    sapply(ewas.ret, function(ewas.by.time) ewas.by.time$full$table[site,"p.value"])
+})
+ret.p <- format(ret.p,scientific=T,digits=3)
+kable(ret.p)
+```
+
+
+Correlation of the top 100 effects across all time points
+(the top 100 were selected from the model corresponding to the columns in the table).
+
+Basic model
+```{r}
+for (time in names(ewas.ret))
+    ewas.ret[[time]]$basic$top <- with(ewas.ret[[time]]$basic, rownames(table)[order(table$p.value)[1:100]])
+ret <- sapply(ewas.ret, function(a) {
+    sapply(ewas.ret, function(b) {
+        cor(a$basic$table[a$basic$top,"estimate"], b$basic$table[a$basic$top,"estimate"], use="p")
+    })
+})
+kable(ret,digits=3)
+```
+
+.. and full model:
+```{r}
+for (time in names(ewas.ret))
+    ewas.ret[[time]]$full$top <- with(ewas.ret[[time]]$full, rownames(table)[order(table$p.value)[1:100]])
+ret <- sapply(ewas.ret, function(a) {
+    sapply(ewas.ret, function(b) {
+        cor(a$full$table[a$full$top,"estimate"], b$full$table[a$full$top,"estimate"], use="p")
+    })
+})
+kable(ret,digits=3)
+```
+
+
+Agreement about the top 100 associations (basic model):
+```{r}
+ret <- sapply(ewas.ret, function(a) {
+    sapply(ewas.ret, function(b) {
+        length(intersect(a$basic$top, b$basic$top))
+    })
+})
+kable(ret,digits=3)
+```
+
+... and full model:
+```{r}
+ret <- sapply(ewas.ret, function(a) {
+    sapply(ewas.ret, function(b) {
+        length(intersect(a$full$top, b$full$top))
+    })
+})
+kable(ret,digits=3)
+```
+
+### DMR results
+
+```{r}
+kable(do.call(rbind, lapply(names(dmr.ret), function(time) {
+    do.call(rbind, lapply(names(dmr.ret[[time]]), function(model) {
+        dmrs <- dmr.ret[[time]][[model]]
+        idx <- which(dmrs$p.adjust < 0.05 & dmrs$n > 1)
+        if (length(idx) == 0) return(NULL)
+        data.frame(time=time, model=model, dmrs[idx,c("chr","start","end","estimate","se","p.value","p.adjust")])
+    }))
+})), row.names=F)
+```

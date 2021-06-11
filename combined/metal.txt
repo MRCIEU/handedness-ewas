@@ -1,0 +1,15 @@
+# Describe and process the DGI input files
+SCHEME STDERR
+MARKER   cgid
+WEIGHT   N
+#ALLELE   EFFECT_ALLELE NON_EFFECT_ALLELE
+EFFECT   Beta
+STDERR   SE
+PVAL     Pval
+
+PROCESS hand_NTR_Model2.txt
+PROCESS hand_ALSPAC_Model2.txt
+
+# Execute meta-analysis
+
+ANALYZE
