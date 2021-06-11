@@ -1,7 +1,8 @@
 # handedness-ewas
 
-> DNA methylation signatures of left-handedness for different tissues and ages 
-> Veronika V. Odintsova, Matthew Suderman, Fiona A. Hagenbeek, Doretta Caramaschi, Jouke-Jan Hottenga, René Pool, BIOS consortium,
+> **DNA methylation signatures of left-handedness for different tissues and ages**
+> by Veronika V. Odintsova, Matthew Suderman, Fiona A. Hagenbeek, Doretta Caramaschi, Jouke-Jan Hottenga, René Pool, 
+> BIOS consortium,
 > Conor V. Dolan, Lannie Ligthart, Catharina E.M. van Beijsterveld, Gonneke Willemsen, Eco J.C. de Geus, Jeffrey J. Beck, Erik A.
 > Ehli, Gabriel Cuellar-Partida, David M. Evans, Sara E. Medland, Caroline L. Relton, Dorret I. Boomsma, Jenny van Dongen
 
